@@ -15,7 +15,9 @@ LAST_LINE_START = "End of this Etext"
 def load_stopwords():
     """Load the stopwords from the file and return a set of the cleaned stopwords."""
 
-    stopwords = set()
+    stopwords = set(line.strip() for line in open(STOPWORDS_PATH,"r",encoding='cp437'))
+    print(type(stopwords))
+
 
     # fill this in
 
@@ -28,7 +30,17 @@ def load_shakespeare_lines():
     shakespeare_lines = []
 
     # fill this in
+    with open(SHAKESPEARE_PATH, "r") as file:
+        shakespeare_lines = file.readlines()[246:-7]
+    result = re.sub('<<(\n|.)+?>>',"",str(shakespeare_lines))
 
+#accoring to geeksforgeeks.org
+    def Convert(string):
+        li = list(string.split(" "))
+        return li
+
+
+    shakespeare_lines = Convert(result)
     return shakespeare_lines
 
 
@@ -37,6 +49,19 @@ def get_shakespeare_words(shakespeare_lines):
 
     # fill this in
 
+    words = []
+    for i in shakespeare_lines:
+        words.append(i.lower())
+    clean_words = re.sub('/.*n', ' ', str(words))
+    clean_text = re.sub('[^A-Za-z/s]', ' ', str(clean_words))
+    text_with_only_spaces = re.sub("/s+", " ", str(clean_text))
+
+    words = text_with_only_spaces
+    #accoring to geeksforgeeks.org
+    def Convert(string):
+        li = list(string.split(" "))
+        return li
+    words = Convert(words)
     return words
 
 
@@ -47,7 +72,23 @@ def count_words(words, stopwords):
     word_counts = dict()
 
     # fill this in
+    word_counts = dict()
+    real_words = [item for item in words if item not in stopwords]
+    
+    def char_count(str_):
 
+            char_counts = {}
+
+            for char_ in str_:
+
+                if char_ in char_counts:
+                    char_counts[char_] += 1
+                else:
+                    char_counts[char_] = 1
+
+            return char_counts
+    result = char_count(real_words)
+    word_counts = result
     return word_counts
 
 
@@ -56,6 +97,7 @@ def sort_word_counts(word_counts):
     Returns a list of (word, count) tuples that are sorted by count in descending order."""
 
     # fill this in
+    sorted_word_counts = sorted(word_counts.items(), key=lambda e: e[1], reverse=True)
 
     return sorted_word_counts
 
@@ -65,6 +107,13 @@ def write_word_counts(sorted_word_counts, path):
 
        # fill this in
 
+    with open(OUTPUT_PATH, "w+") as shakespeare_report:
+
+        csv_writer = csv.writer(shakespeare_report)
+
+        csv_writer.writerow(["word", "count"])
+        for row in sorted_word_counts:
+            csv_writer.writerow(row)
 
 if __name__ == "__main__":
 
